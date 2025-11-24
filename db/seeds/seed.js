@@ -26,7 +26,7 @@ const seed = ({ reasonData, userData }) => {
       return db.query(
         `CREATE TABLE reasons(
         description VARCHAR(255) PRIMARY KEY,
-        est_wait INTERVAL
+        est_wait INT
         );`
       );
     })

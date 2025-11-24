@@ -1,14 +1,14 @@
 module.exports = [
   {
     description: "prescription",
-    estimated_wait: "2 mins 30 secs",
+    estimated_wait: 150,
   },
   {
     description: "same day care",
-    estimated_wait: "3 mins",
+    estimated_wait: 180,
   },
   {
     description: "test results",
-    estimated_wait: "4 mins",
+    estimated_wait: 240,
   },
 ];
