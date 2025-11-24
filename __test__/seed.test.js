@@ -18,7 +18,6 @@ describe("seeding", () => {
             );`
         )
         .then(({ rows: [{ exists }] }) => {
-            // console.log(rows)
           expect(exists).toBe(true);
         });
     });
