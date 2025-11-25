@@ -229,24 +229,24 @@ describe("seeding", () => {
         });
     });
 
-    test("queue table has a position column as a serial", () => {
+    test("queue table has a queue_entry_id column as a serial", () => {
       return db
         .query(
           `SELECT column_name, data_type, column_default
             FROM information_schema.columns
             WHERE table_name = 'queue'
-            AND column_name = 'position';`
+            AND column_name = 'queue_entry_id';`
         )
         .then(({ rows: [column] }) => {
-          expect(column.column_name).toBe("position");
+          expect(column.column_name).toBe("queue_entry_id");
           expect(column.data_type).toBe("integer");
           expect(column.column_default).toBe(
-            "nextval('queue_position_seq'::regclass)"
+            "nextval('queue_queue_entry_id_seq'::regclass)"
           );
         });
     });
 
-    test("queue table has the position column as the primary key", () => {
+    test("queue table has the queue_entry_id column as the primary key", () => {
       return db
         .query(
           `SELECT column_name
@@ -257,7 +257,7 @@ describe("seeding", () => {
             AND tc.table_name = 'queue';`
         )
         .then(({ rows: [{ column_name }] }) => {
-          expect(column_name).toBe("position");
+          expect(column_name).toBe("queue_entry_id");
         });
     });
 

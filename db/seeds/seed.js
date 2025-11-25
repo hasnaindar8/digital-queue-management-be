@@ -33,7 +33,7 @@ const seed = ({ reasonData, userData }) => {
     .then(() => {
       return db.query(
         `CREATE TABLE queue(
-        position SERIAL PRIMARY KEY,
+        queue_entry_id SERIAL PRIMARY KEY,
         user_id INT REFERENCES users(user_id),
         reason VARCHAR(255) REFERENCES reasons(description)
         );`
@@ -68,7 +68,7 @@ const seed = ({ reasonData, userData }) => {
         nestedArrOfReasons
       );
       return db.query(reasonsInsertStr);
-    });
-};
+    })
+ };
 
 module.exports = seed;
