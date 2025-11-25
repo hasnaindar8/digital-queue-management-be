@@ -169,21 +169,24 @@ describe("seeding", () => {
         });
     });
 
-    test("reasons table has a description column as a varying character", () => {
+    test("reasons table has a reason_id column as a serial", () => {
       return db
         .query(
-          `SELECT column_name, data_type
+          `SELECT column_name, data_type, column_default
             FROM information_schema.columns
             WHERE table_name = 'reasons'
-            AND column_name = 'description';`
+            AND column_name = 'reason_id';`
         )
         .then(({ rows: [column] }) => {
-          expect(column.column_name).toBe("description");
-          expect(column.data_type).toBe("character varying");
+          expect(column.column_name).toBe("reason_id");
+          expect(column.data_type).toBe("integer");
+          expect(column.column_default).toBe(
+            "nextval('reasons_reason_id_seq'::regclass)"
+          );
         });
     });
 
-    test("reasons table has the description column as the primary key", () => {
+    test("reasons table has the reason_id column as the primary key", () => {
       return db
         .query(
           `SELECT column_name
@@ -194,7 +197,21 @@ describe("seeding", () => {
             AND tc.table_name = 'reasons';`
         )
         .then(({ rows: [{ column_name }] }) => {
-          expect(column_name).toBe("description");
+          expect(column_name).toBe("reason_id");
+        });
+    });
+
+    test("reasons table has a label column as a varying character", () => {
+      return db
+        .query(
+          `SELECT column_name, data_type
+            FROM information_schema.columns
+            WHERE table_name = 'reasons'
+            AND column_name = 'label';`
+        )
+        .then(({ rows: [column] }) => {
+          expect(column.column_name).toBe("label");
+          expect(column.data_type).toBe("character varying");
         });
     });
 
@@ -213,15 +230,15 @@ describe("seeding", () => {
     });
   });
 
-  describe("queue table", () => {
-    test("queue table exists", () => {
+  describe("queue_entries table", () => {
+    test("queue_entries table exists", () => {
       return db
         .query(
           `SELECT EXISTS (
             SELECT FROM 
                 information_schema.tables
             WHERE 
-                table_name = 'queue'
+                table_name = 'queue_entries'
             );`
         )
         .then(({ rows: [{ exists }] }) => {
@@ -229,24 +246,24 @@ describe("seeding", () => {
         });
     });
 
-    test("queue table has a queue_entry_id column as a serial", () => {
+    test("queue_entries table has a entry_id column as a serial", () => {
       return db
         .query(
           `SELECT column_name, data_type, column_default
             FROM information_schema.columns
-            WHERE table_name = 'queue'
-            AND column_name = 'queue_entry_id';`
+            WHERE table_name = 'queue_entries'
+            AND column_name = 'entry_id';`
         )
         .then(({ rows: [column] }) => {
-          expect(column.column_name).toBe("queue_entry_id");
+          expect(column.column_name).toBe("entry_id");
           expect(column.data_type).toBe("integer");
           expect(column.column_default).toBe(
-            "nextval('queue_queue_entry_id_seq'::regclass)"
+            "nextval('queue_entries_entry_id_seq'::regclass)"
           );
         });
     });
 
-    test("queue table has the queue_entry_id column as the primary key", () => {
+    test("queue_entries table has the entry_id column as the primary key", () => {
       return db
         .query(
           `SELECT column_name
@@ -254,19 +271,19 @@ describe("seeding", () => {
             JOIN information_schema.key_column_usage AS kcu
             ON tc.constraint_name = kcu.constraint_name
             WHERE tc.constraint_type = 'PRIMARY KEY'
-            AND tc.table_name = 'queue';`
+            AND tc.table_name = 'queue_entries';`
         )
         .then(({ rows: [{ column_name }] }) => {
-          expect(column_name).toBe("queue_entry_id");
+          expect(column_name).toBe("entry_id");
         });
     });
 
-    test("queue table has a user_id column as a integer", () => {
+    test("queue_entries table has a user_id column as a integer", () => {
       return db
         .query(
           `SELECT column_name, data_type
             FROM information_schema.columns
-            WHERE table_name = 'queue'
+            WHERE table_name = 'queue_entries'
             AND column_name = 'user_id';`
         )
         .then(({ rows: [column] }) => {
@@ -275,7 +292,7 @@ describe("seeding", () => {
         });
     });
 
-    test("user_id column within queue table references a user_id from the users table", () => {
+    test("user_id column within queue_entries table references a user_id from the users table", () => {
       return db
         .query(
           `
@@ -286,7 +303,7 @@ describe("seeding", () => {
         JOIN information_schema.constraint_column_usage AS ccu
           ON ccu.constraint_name = tc.constraint_name
         WHERE tc.constraint_type = 'FOREIGN KEY'
-          AND tc.table_name = 'queue'
+          AND tc.table_name = 'queue_entries'
           AND kcu.column_name = 'user_id'
           AND ccu.table_name = 'users'
           AND ccu.column_name = 'user_id';
@@ -297,21 +314,21 @@ describe("seeding", () => {
         });
     });
 
-    test("queue table has a reason column as a varying character", () => {
+    test("queue_entries table has a reason_id column as a integer", () => {
       return db
         .query(
           `SELECT column_name, data_type
             FROM information_schema.columns
-            WHERE table_name = 'queue'
-            AND column_name = 'reason';`
+            WHERE table_name = 'queue_entries'
+            AND column_name = 'reason_id';`
         )
         .then(({ rows: [column] }) => {
-          expect(column.column_name).toBe("reason");
-          expect(column.data_type).toBe("character varying");
+          expect(column.column_name).toBe("reason_id");
+          expect(column.data_type).toBe("integer");
         });
     });
 
-    test("reason column within queue table references a description from the reasons table", () => {
+    test("reason_id column within queue_entries table references a reason_id from the reasons table", () => {
       return db
         .query(
           `
@@ -322,10 +339,10 @@ describe("seeding", () => {
         JOIN information_schema.constraint_column_usage AS ccu
           ON ccu.constraint_name = tc.constraint_name
         WHERE tc.constraint_type = 'FOREIGN KEY'
-          AND tc.table_name = 'queue'
-          AND kcu.column_name = 'reason'
+          AND tc.table_name = 'queue_entries'
+          AND kcu.column_name = 'reason_id'
           AND ccu.table_name = 'reasons'
-          AND ccu.column_name = 'description';
+          AND ccu.column_name = 'reason_id';
       `
         )
         .then(({ rows }) => {
@@ -340,6 +357,7 @@ describe("data insertion", () => {
     return db.query(`SELECT * FROM users;`).then(({ rows: users }) => {
       expect(users).toHaveLength(5);
       users.forEach((user) => {
+        expect(user).toHaveProperty("user_id");
         expect(user).toHaveProperty("first_name");
         expect(user).toHaveProperty("surname");
         expect(user).toHaveProperty("email");
@@ -355,8 +373,20 @@ describe("data insertion", () => {
     return db.query(`SELECT * FROM reasons;`).then(({ rows: reasons }) => {
       expect(reasons).toHaveLength(3);
       reasons.forEach((reason) => {
-        expect(reason).toHaveProperty("description");
+        expect(reason).toHaveProperty("reason_id");
+        expect(reason).toHaveProperty("label");
         expect(reason).toHaveProperty("est_wait");
+      });
+    });
+  });
+
+  test("queue data has been inserted correctly", () => {
+    return db.query(`SELECT * FROM queue_entries;`).then(({ rows: queue }) => {
+      expect(queue).toHaveLength(4);
+      queue.forEach((reason) => {
+        expect(reason).toHaveProperty("entry_id");
+        expect(reason).toHaveProperty("user_id");
+        expect(reason).toHaveProperty("reason_id");
       });
     });
   });

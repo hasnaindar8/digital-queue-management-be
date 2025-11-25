@@ -1,2 +1,3 @@
-exports.userData = require("./users");
-exports.reasonData = require("./reasons");
+exports.userData = require("./users.js");
+exports.reasonData = require("./reasons.js");
+exports.queueData = require("./queue.js");

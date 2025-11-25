@@ -15,8 +15,4 @@ module.exports = [
     email: "example4@email.com",
     reason: "reason 2",
   },
-  {
-    email: "example5@email.com",
-    reason: "reason 1",
-  },
 ];

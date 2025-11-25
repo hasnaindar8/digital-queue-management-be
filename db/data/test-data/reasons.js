@@ -1,14 +1,14 @@
 module.exports = [
   {
-    description: "reason 1",
-    estimated_wait: 10,
+    label: "reason 1",
+    estimated_wait: 120,
   },
   {
-    description: "reason 2",
-    estimated_wait: 11,
+    label: "reason 2",
+    estimated_wait: 150,
   },
   {
-    description: "reason 3",
-    estimated_wait: 12,
+    label: "reason 3",
+    estimated_wait: 60,
   },
 ];
