@@ -212,4 +212,152 @@ describe("seeding", () => {
         });
     });
   });
+
+  describe("queue table", () => {
+    test("queue table exists", () => {
+      return db
+        .query(
+          `SELECT EXISTS (
+            SELECT FROM 
+                information_schema.tables
+            WHERE 
+                table_name = 'queue'
+            );`
+        )
+        .then(({ rows: [{ exists }] }) => {
+          expect(exists).toBe(true);
+        });
+    });
+
+    test("queue table has a position column as a serial", () => {
+      return db
+        .query(
+          `SELECT column_name, data_type, column_default
+            FROM information_schema.columns
+            WHERE table_name = 'queue'
+            AND column_name = 'position';`
+        )
+        .then(({ rows: [column] }) => {
+          expect(column.column_name).toBe("position");
+          expect(column.data_type).toBe("integer");
+          expect(column.column_default).toBe(
+            "nextval('queue_position_seq'::regclass)"
+          );
+        });
+    });
+
+    test("queue table has the position column as the primary key", () => {
+      return db
+        .query(
+          `SELECT column_name
+            FROM information_schema.table_constraints AS tc
+            JOIN information_schema.key_column_usage AS kcu
+            ON tc.constraint_name = kcu.constraint_name
+            WHERE tc.constraint_type = 'PRIMARY KEY'
+            AND tc.table_name = 'queue';`
+        )
+        .then(({ rows: [{ column_name }] }) => {
+          expect(column_name).toBe("position");
+        });
+    });
+
+    test("queue table has a user_id column as a integer", () => {
+      return db
+        .query(
+          `SELECT column_name, data_type
+            FROM information_schema.columns
+            WHERE table_name = 'queue'
+            AND column_name = 'user_id';`
+        )
+        .then(({ rows: [column] }) => {
+          expect(column.column_name).toBe("user_id");
+          expect(column.data_type).toBe("integer");
+        });
+    });
+
+    test("user_id column within queue table references a user_id from the users table", () => {
+      return db
+        .query(
+          `
+        SELECT *
+        FROM information_schema.table_constraints AS tc
+        JOIN information_schema.key_column_usage AS kcu
+          ON tc.constraint_name = kcu.constraint_name
+        JOIN information_schema.constraint_column_usage AS ccu
+          ON ccu.constraint_name = tc.constraint_name
+        WHERE tc.constraint_type = 'FOREIGN KEY'
+          AND tc.table_name = 'queue'
+          AND kcu.column_name = 'user_id'
+          AND ccu.table_name = 'users'
+          AND ccu.column_name = 'user_id';
+      `
+        )
+        .then(({ rows }) => {
+          expect(rows).toHaveLength(1);
+        });
+    });
+
+    test("queue table has a reason column as a varying character", () => {
+      return db
+        .query(
+          `SELECT column_name, data_type
+            FROM information_schema.columns
+            WHERE table_name = 'queue'
+            AND column_name = 'reason';`
+        )
+        .then(({ rows: [column] }) => {
+          expect(column.column_name).toBe("reason");
+          expect(column.data_type).toBe("character varying");
+        });
+    });
+
+    test("reason column within queue table references a description from the reasons table", () => {
+      return db
+        .query(
+          `
+        SELECT *
+        FROM information_schema.table_constraints AS tc
+        JOIN information_schema.key_column_usage AS kcu
+          ON tc.constraint_name = kcu.constraint_name
+        JOIN information_schema.constraint_column_usage AS ccu
+          ON ccu.constraint_name = tc.constraint_name
+        WHERE tc.constraint_type = 'FOREIGN KEY'
+          AND tc.table_name = 'queue'
+          AND kcu.column_name = 'reason'
+          AND ccu.table_name = 'reasons'
+          AND ccu.column_name = 'description';
+      `
+        )
+        .then(({ rows }) => {
+          expect(rows).toHaveLength(1);
+        });
+    });
+  });
+});
+
+describe("data insertion", () => {
+  test("user data has been inserted correctly", () => {
+    return db.query(`SELECT * FROM users;`).then(({ rows: users }) => {
+      expect(users).toHaveLength(5);
+      users.forEach((user) => {
+        expect(user).toHaveProperty("first_name");
+        expect(user).toHaveProperty("surname");
+        expect(user).toHaveProperty("email");
+        expect(user).toHaveProperty("phone_no");
+        expect(user).toHaveProperty("password");
+        expect(user).toHaveProperty("type");
+        expect(user).toHaveProperty("reg_status");
+      });
+    });
+  });
+
+  test("reason data has been inserted correctly", () => {
+    return db.query(`SELECT * FROM reasons;`).then(({ rows: reasons }) => {
+      expect(reasons).toHaveLength(3);
+      reasons.forEach((reason) => {
+        expect(reason).toHaveProperty("description");
+        expect(reason).toHaveProperty("est_wait");
+      });
+    });
+  });
 });

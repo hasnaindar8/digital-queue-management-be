@@ -6,6 +6,7 @@ module.exports = [
     phone_no: "12345678910",
     password: "password1",
     type: "patient",
+    registered: true,
   },
   {
     first_name: "lewis",
@@ -14,6 +15,7 @@ module.exports = [
     phone_no: "23456789101",
     password: "password2",
     type: "patient",
+    registered: true,
   },
   {
     first_name: "tom",
@@ -22,6 +24,7 @@ module.exports = [
     phone_no: "73345678910",
     password: "password3",
     type: "patient",
+    registered: true,
   },
   {
     first_name: "bob",
@@ -30,6 +33,7 @@ module.exports = [
     phone_no: "84345678910",
     password: "password4",
     type: "patient",
+    registered: true,
   },
   {
     first_name: "david",
@@ -38,5 +42,6 @@ module.exports = [
     phone_no: "87245678910",
     password: "password5",
     type: "receptionist",
+    registered: false,
   },
 ];

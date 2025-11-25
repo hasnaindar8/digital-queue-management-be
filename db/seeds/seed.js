@@ -1,4 +1,4 @@
-const format = require("node-pg-format");
+const { format } = require("node-pg-format");
 const db = require("../connection");
 
 const seed = ({ reasonData, userData }) => {
@@ -40,7 +40,34 @@ const seed = ({ reasonData, userData }) => {
       );
     })
     .then(() => {
-      console.log(reasonData);
+      const nestedArrOfUsers = userData.map((user) => {
+        return [
+          user.first_name,
+          user.surname,
+          user.email,
+          user.phone_no,
+          user.password,
+          user.type,
+          user.registered,
+        ];
+      });
+      const usersInsertStr = format(
+        `INSERT INTO users (first_name, surname, email, phone_no, password, type, reg_status)
+        VALUES %L`,
+        nestedArrOfUsers
+      );
+      return db.query(usersInsertStr);
+    })
+    .then(() => {
+      const nestedArrOfReasons = reasonData.map((reason) => {
+        return [reason.description, reason.estimated_wait];
+      });
+      const reasonsInsertStr = format(
+        `INSERT INTO reasons (description, est_wait)
+        VALUES %L`,
+        nestedArrOfReasons
+      );
+      return db.query(reasonsInsertStr);
     });
 };
 
