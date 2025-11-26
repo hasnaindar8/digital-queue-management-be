@@ -12,7 +12,7 @@ afterAll(() => {
 });
 
 describe("DELETE /api/queue_entries/:entry_id", () => {
-  test("204: Responds with status 204 and no content when patient is removed from queue", () => {
+  it("204: Responds with status 204 and no content when patient is removed from queue", () => {
     return request(app)
     .delete("/api/queue_entries/3")
     .expect(204)
@@ -20,7 +20,7 @@ describe("DELETE /api/queue_entries/:entry_id", () => {
         expect(body).toEqual({})
     })
   });
-  test("400: Responds with error message when delete request is made with invalid entry_id type", () => {
+  it("400: Responds with error message when delete request is made with invalid entry_id type", () => {
     return request(app)
     .delete("/api/queue_entries/not_a_real_id")
     .expect(400)
@@ -28,7 +28,7 @@ describe("DELETE /api/queue_entries/:entry_id", () => {
         expect(msg).toBe("Invalid input syntax")
     })
   }); 
-  test("404: Responds with error message when delete request is made with valid entry_id that does not exist", () => {
+  it("404: Responds with error message when delete request is made with valid entry_id that does not exist", () => {
     return request(app)
     .delete("/api/queue_entries/50000")
     .expect(404)

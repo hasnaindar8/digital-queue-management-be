@@ -1,6 +1,6 @@
 const db = require("../db/connection");
 
-exports.deleteQueueEntry = (entry_id) => {
+function deleteQueueEntry(entry_id) {
   return db.query(`DELETE FROM queue_entries WHERE entry_id = $1;`, [entry_id])
     .then(({ rowCount }) => {
       if (rowCount === 0) {
@@ -9,3 +9,5 @@ exports.deleteQueueEntry = (entry_id) => {
       return rowCount;
     });
 };
+
+module.exports = { deleteQueueEntry };
