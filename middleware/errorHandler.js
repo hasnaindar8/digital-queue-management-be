@@ -21,6 +21,9 @@ exports.psqlErrorHandler = (err, req, res, next) => {
     case "42703":
       res.status(400).send({ msg: "Column does not exist" });
       break;
+    case "23505":
+      res.status(409).send({ msg: "A record with this value already exists" });
+      break;
     default:
       next(err);
   }

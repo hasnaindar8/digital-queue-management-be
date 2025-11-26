@@ -96,6 +96,22 @@ describe("seeding", () => {
         });
     });
 
+    test("users table has a UNIQUE constraint on email column", () => {
+      return db
+        .query(
+          `SELECT tc.constraint_name
+          FROM information_schema.table_constraints AS tc
+          JOIN information_schema.constraint_column_usage AS ccu
+            ON tc.constraint_name = ccu.constraint_name
+          WHERE tc.table_name = 'users'
+            AND tc.constraint_type = 'UNIQUE'
+            AND ccu.column_name = 'email';`
+        )
+        .then(({ rows }) => {
+          expect(rows.length).toBe(1);
+        });
+    });
+
     test("users table has a phone_no column as a varying character", () => {
       return db
         .query(
