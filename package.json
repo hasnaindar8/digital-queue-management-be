@@ -2,7 +2,7 @@
   "name": "digital-queue-management-be",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "listen.js",
   "scripts": {
     "setup-dbs": "psql -f ./db/setup-dbs.sql",
     "seed": "node ./db/seeds/run-seed.js",
