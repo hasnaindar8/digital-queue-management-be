@@ -1,4 +1,4 @@
-const { insertUser, readUserByEmail } = require("../models/auth.model.js");
+const { insertUser, findUserByEmail } = require("../models/auth.model.js");
 
 function registerUser(req, res) {
   const requestBody = req.body;
@@ -10,16 +10,37 @@ function registerUser(req, res) {
 const getUserByEmail = (req, res) => {
   const { email, password } = req.body;
 
-  if (!email || !password) {
+  if (
+    typeof email !== "string" ||
+    email.length === 0 ||
+    typeof password !== "string" ||
+    password.length === 0
+  ) {
     return Promise.reject({ status: 400, msg: "Bad Request" });
   }
 
-  return readUserByEmail(email, password).then(({ rows }) => {
+  return findUserByEmail(email, password).then(({ rows }) => {
     if (rows.length === 0) {
-      return Promise.reject({ status: 404, msg: "User does not exist" });
-    } else {
-      res.status(200).send({ user_type: rows[0].type });
+      return Promise.reject({
+        status: 404,
+        msg: `No user found for email: ${email}`,
+      });
     }
+
+    if (!rows[0]["reg_status"]) {
+      return Promise.reject({
+        status: 401,
+        msg: "Registration process pending",
+      });
+    }
+
+    const user = {
+      userId: rows[0]["user_id"],
+      firstName: rows[0]["first_name"],
+      surname: rows[0]["surname"],
+      type: rows[0]["type"],
+    };
+    res.status(200).send({ user });
   });
 };
 
