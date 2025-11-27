@@ -15,7 +15,7 @@ const seed = ({ reasonData, userData, queueData }) => {
         user_id SERIAL PRIMARY KEY,
         first_name VARCHAR(255),
         surname VARCHAR(255),
-        email VARCHAR(50),
+        email VARCHAR(50) UNIQUE,
         phone_no VARCHAR(20),
         password VARCHAR(20),
         type VARCHAR(20),
