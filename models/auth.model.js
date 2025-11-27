@@ -27,4 +27,11 @@ function insertUser(requestBody) {
   );
 }
 
-module.exports = { insertUser };
+function readUserByEmail(email, password) {
+  return db.query(`Select type from users where email = $1 and password = $2`, [
+    email,
+    password,
+  ]);
+}
+
+module.exports = { insertUser, readUserByEmail };

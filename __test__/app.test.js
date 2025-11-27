@@ -78,3 +78,71 @@ describe("POST /api/auth/signup", () => {
       });
   });
 });
+
+describe("POST /api/auth/login", () => {
+  test("status:200, responds an object containing a property of user_type", () => {
+    const validUser = { email: "example1@email.com", password: "password1" };
+    return request(app)
+      .post("/api/auth/login/")
+      .send(validUser)
+      .expect(200)
+      .then(({ body }) => {
+        const { user_type } = body;
+        expect(typeof user_type).toBe("string");
+        expect(user_type).toBe("patient");
+      });
+  });
+  test("status:400, responds an error message if the email and password is empty", () => {
+    const invalidUser = { email: "", password: "" };
+    return request(app)
+      .post("/api/auth/login/")
+      .send(invalidUser)
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Bad Request");
+      });
+  });
+  test("status:404, responds an error message if the email does not exist", () => {
+    const invalidUser = {
+      email: "example10@email.com",
+      password: "password123",
+    };
+    return request(app)
+      .post("/api/auth/login/")
+      .send(invalidUser)
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("User does not exist");
+      });
+  });
+  test("status:400, responds an error message if the required field is null", () => {
+    const invalidUser = {
+      email: null,
+      password: null,
+    };
+    return request(app)
+      .post("/api/auth/login/")
+      .send(invalidUser)
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Bad Request");
+      });
+  });
+  test("status:404, responds an error message if the api is not valid", () => {
+    const validUser = {
+      email: "example1@email.com",
+      password: "password1",
+    };
+    return request(app)
+      .post("/api/auth/logn/")
+      .send(validUser)
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Path not found");
+      });
+  });
+});
