@@ -14,7 +14,7 @@ app.use(cors());
 
 app.use(express.json());
 
-app.use("/api", reasonRouter);
+app.use("/api/reasons", reasonRouter);
 
 app.use("/api/auth", authRouter);
 

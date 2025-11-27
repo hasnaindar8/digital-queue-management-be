@@ -1,15 +1,17 @@
 const db = require("../db/connection");
 
-function readReasons() {
-  return db.query(
-    `SELECT 
+function fetchReasons() {
+  return db
+    .query(
+      `SELECT 
         reason_id,
         label 
     FROM reasons;
-    `).then(({ rows }) => {
-      console.log(rows)
-    return rows;
-  });
+    `
+    )
+    .then(({ rows }) => {
+      return rows;
+    });
 }
 
-module.exports = { readReasons };
+module.exports = { fetchReasons };
