@@ -135,3 +135,80 @@ describe("DELETE /api/queue/:entry_id", () => {
       });
   });
 });
+
+describe("POST /api/auth/login", () => {
+  it("status:200, responds with a user object", () => {
+    const validUser = { email: "example1@email.com", password: "password1" };
+    return request(app)
+      .post("/api/auth/login")
+      .send(validUser)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body).toHaveProperty("user");
+        const user = body["user"];
+        expect(user).toBeInstanceOf(Object);
+        expect(typeof user["userId"]).toBe("number");
+        expect(typeof user["firstName"]).toBe("string");
+        expect(typeof user["surname"]).toBe("string");
+        expect(typeof user["type"]).toBe("string");
+        expect(user["userId"]).toBe(1);
+        expect(user["firstName"]).toBe("jamie");
+        expect(user["surname"]).toBe("marsh-feay");
+        expect(user["type"]).toBe("patient");
+      });
+  });
+
+  it("status:401, responds an error message if the reg_status is false", () => {
+    const validUser = { email: "example3@email.com", password: "password3" };
+    return request(app)
+      .post("/api/auth/login")
+      .send(validUser)
+      .expect(401)
+      .then(({ body }) => {
+        expect(body).toHaveProperty("msg");
+        expect(body["msg"]).toBe("Registration process pending");
+      });
+  });
+
+  it("status:400, responds an error message if the email and password is empty", () => {
+    const invalidUser = { email: "", password: "" };
+    return request(app)
+      .post("/api/auth/login")
+      .send(invalidUser)
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Bad Request");
+      });
+  });
+
+  it("status:404, responds an error message if the email does not exist", () => {
+    const invalidUser = {
+      email: "example10@email.com",
+      password: "password123",
+    };
+    return request(app)
+      .post("/api/auth/login")
+      .send(invalidUser)
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("No user found for email: example10@email.com");
+      });
+  });
+
+  it("status:400, responds an error message if the required field is null", () => {
+    const invalidUser = {
+      email: null,
+      password: null,
+    };
+    return request(app)
+      .post("/api/auth/login")
+      .send(invalidUser)
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Bad Request");
+      });
+  });
+});
