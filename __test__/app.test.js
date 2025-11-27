@@ -78,3 +78,9 @@ describe("POST /api/auth/signup", () => {
       });
   });
 });
+
+describe("POST /api/queue/join", () => {
+  it("", () => {
+
+  })
+})
