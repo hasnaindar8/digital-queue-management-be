@@ -80,7 +80,89 @@ describe("POST /api/auth/signup", () => {
 });
 
 describe("POST /api/queue/join", () => {
-  it("", () => {
+  it("status:201, responds with the newly created queue entry", () => {
+    const validRequestBody = {
+      user_id: 1,
+      reason_id: 1,
+    };
 
-  })
-})
+    return request(app)
+      .post("/api/queue/join")
+      .send(validRequestBody)
+      .expect(201)
+      .then(({ body }) => {
+        const queue_entry = body.queue_entry;
+        expect(queue_entry.user_id).toBe(1);
+        expect(queue_entry.reason_id).toBe(1);
+      });
+  });
+
+  it("status:400, responds with an error message when passed a body that does not contain the correct fields", () => {
+    const invalidRequestBody = {
+      birthstone: 1,
+      faveFood: 1,
+    };
+
+    return request(app)
+      .post("/api/queue/join")
+      .send(invalidRequestBody)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("You have made a bad request");
+      });
+  });
+
+  it("status:400, responds with an error message when passed a body that contains the correct fields but at least one field value is invalid", () => {
+    const invalidRequestBodies = [
+      {
+        user_id: "1",
+        reason_id: 1,
+      },
+      {
+        user_id: 2,
+        reason_id: "2",
+      },
+    ];
+
+    const testRequests = invalidRequestBodies.map((invalidRequestBody) => {
+      return request(app)
+        .post("/api/queue/join")
+        .send(invalidRequestBody)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("You have made a bad request");
+        });
+    });
+    return Promise.all(testRequests);
+  });
+
+  xit("status:404, responds with an error message when passed a body that contains a valid user ID, but one that doesn't exist", () => {
+    const validRequestBody = {
+      user_id: 20,
+      reason_id: 1,
+    };
+
+    return request(app)
+      .post("/api/queue/join")
+      .send(validRequestBody)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("User not found");
+      });
+  });
+
+  xit("status:404, responds with an error message when passed a body that contains a valid reason ID, but one that doesn't exist", () => {
+    const validRequestBody = {
+      user_id: 1,
+      reason_id: 10,
+    };
+
+    return request(app)
+      .post("/api/queue/join")
+      .send(validRequestBody)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Reason not found");
+      });
+  });
+});
