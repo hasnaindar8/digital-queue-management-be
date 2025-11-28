@@ -14,4 +14,14 @@ function deleteQueueEntry(entryId) {
     });
 }
 
-module.exports = { deleteQueueEntry };
+function getQueueEntries() {
+  return db
+    .query(
+      `SELECT queue_entries.user_id, reasons.est_wait from queue_entries JOIN reasons ON queue_entries.reason_id=reasons.reason_id ORDER BY queue_entries.created_at ASC;`
+    )
+    .then(({ rows }) => {
+      return rows;
+    });
+}
+
+module.exports = { deleteQueueEntry, getQueueEntries };

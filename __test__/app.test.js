@@ -1,5 +1,5 @@
 const request = require("supertest");
-const app = require("../app.js");
+const { app } = require("../app.js");
 const db = require("../db/connection.js");
 const data = require("../db/data/test-data/index.js");
 const seed = require("../db/seeds/seed.js");
@@ -107,10 +107,10 @@ describe("GET /api/reasons", () => {
   });
 });
 
-describe("DELETE /api/queue/:entry_id", () => {
+describe("DELETE /api/queue/:entry_id/:user_id", () => {
   it("204: Responds with status 204 and no content when patient is removed from queue", () => {
     return request(app)
-      .delete("/api/queue/3")
+      .delete("/api/queue/3/3")
       .expect(204)
       .then(({ body }) => {
         expect(body).toEqual({});
@@ -119,7 +119,7 @@ describe("DELETE /api/queue/:entry_id", () => {
 
   it("400: Responds with error message when delete request is made with invalid entry_id type", () => {
     return request(app)
-      .delete("/api/queue/not_a_real_id")
+      .delete("/api/queue/not_a_real_entry_id/3")
       .expect(400)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("Invalid input syntax");
@@ -128,7 +128,7 @@ describe("DELETE /api/queue/:entry_id", () => {
 
   it("404: Responds with error message when delete request is made with valid entry_id that does not exist", () => {
     return request(app)
-      .delete("/api/queue/50000")
+      .delete("/api/queue/50000/3")
       .expect(404)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("No entry found to delete with entry_id: 50000");
