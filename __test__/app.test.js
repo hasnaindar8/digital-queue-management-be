@@ -136,33 +136,27 @@ describe("POST /api/queue/join", () => {
     return Promise.all(testRequests);
   });
 
-  xit("status:404, responds with an error message when passed a body that contains a valid user ID, but one that doesn't exist", () => {
-    const validRequestBody = {
-      user_id: 20,
-      reason_id: 1,
-    };
+  it("status:409, responds with an error message when passed a body that contains valid user and reason IDs, but at least one doesn't exist", () => {
+    const validRequestBodies = [
+      {
+        user_id: 20,
+        reason_id: 1,
+      },
+      {
+        user_id: 1,
+        reason_id: 10,
+      },
+    ];
 
-    return request(app)
-      .post("/api/queue/join")
-      .send(validRequestBody)
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("User not found");
-      });
-  });
-
-  xit("status:404, responds with an error message when passed a body that contains a valid reason ID, but one that doesn't exist", () => {
-    const validRequestBody = {
-      user_id: 1,
-      reason_id: 10,
-    };
-
-    return request(app)
-      .post("/api/queue/join")
-      .send(validRequestBody)
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Reason not found");
-      });
+    const testRequests = validRequestBodies.map((validRequestBody) => {
+      return request(app)
+        .post("/api/queue/join")
+        .send(validRequestBody)
+        .expect(409)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Referenced record does not exist");
+        });
+    });
+    return Promise.all(testRequests);
   });
 });
