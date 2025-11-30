@@ -1,4 +1,14 @@
-const { insertQueueEntry } = require("../models/queue.model.js");
+const {
+  deleteQueueEntry,
+  insertQueueEntry,
+} = require("../models/queue.model.js");
+
+function removePatient(req, res) {
+  const { entry_id } = req.params;
+  return deleteQueueEntry(entry_id).then(() => {
+    res.status(204).send();
+  });
+}
 
 function addQueueEntry(req, res) {
   const { user_id, reason_id } = req.body;
@@ -12,4 +22,4 @@ function addQueueEntry(req, res) {
   });
 }
 
-module.exports = { addQueueEntry };
+module.exports = { removePatient, addQueueEntry };

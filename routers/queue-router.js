@@ -1,6 +1,11 @@
-const { addQueueEntry } = require("../controllers/queue.controller.js");
+const {
+  removePatient,
+  addQueueEntry,
+} = require("../controllers/queue.controller.js");
 const express = require("express");
 const queueRouter = express.Router();
+
+queueRouter.route("/:entry_id").delete(removePatient);
 
 queueRouter.route("/join").post(addQueueEntry);
 
