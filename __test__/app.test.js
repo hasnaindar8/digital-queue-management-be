@@ -91,9 +91,9 @@ describe("POST /api/queue/join", () => {
       .send(validRequestBody)
       .expect(201)
       .then(({ body }) => {
-        const queue_entry = body.queue_entry;
-        expect(queue_entry.user_id).toBe(1);
-        expect(queue_entry.reason_id).toBe(1);
+        const queueEntry = body.queueEntry;
+        expect(queueEntry.user_id).toBe(validRequestBody.user_id);
+        expect(queueEntry.reason_id).toBe(validRequestBody.reason_id);
       });
   });
 
@@ -108,7 +108,7 @@ describe("POST /api/queue/join", () => {
       .send(invalidRequestBody)
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("You have made a bad request");
+        expect(body.msg).toBe("Bad Request");
       });
   });
 
@@ -130,9 +130,10 @@ describe("POST /api/queue/join", () => {
         .send(invalidRequestBody)
         .expect(400)
         .then(({ body }) => {
-          expect(body.msg).toBe("You have made a bad request");
+          expect(body.msg).toBe("Bad Request");
         });
     });
+
     return Promise.all(testRequests);
   });
 
@@ -157,6 +158,7 @@ describe("POST /api/queue/join", () => {
           expect(body.msg).toBe("Referenced record does not exist");
         });
     });
+
     return Promise.all(testRequests);
   });
 });
