@@ -1,5 +1,5 @@
 const { Server } = require("socket.io");
-const { getQueueEntries } = require("../models/queue.models.js");
+const { getQueueEntries } = require("../models/queue.model.js");
 
 class SocketService {
   constructor() {
