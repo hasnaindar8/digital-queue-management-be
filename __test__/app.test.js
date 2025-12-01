@@ -135,3 +135,29 @@ describe("DELETE /api/queue/:entry_id", () => {
       });
   });
 });
+
+describe("GET /api/queue/", () => {
+  it("status:200, responds an object with the key of queue and the value of an array of queue objects", () => {
+    return request(app)
+      .get("/api/queue")
+      .expect(200)
+      .then(({ body: { queue } }) => {
+        expect(queue).toBeInstanceOf(Array);
+        console.log(data.queueData.length);
+        expect(queue).toHaveLength(data.queueData.length - 1);
+        expect(queue.length > 0);
+
+        queue.forEach((que) => {
+          expect(que).toEqual(
+            expect.objectContaining({
+              entry_id: expect.any(Number),
+              user_id: expect.any(Number),
+              first_name: expect.any(String),
+              surname: expect.any(String),
+              label: expect.any(String),
+            })
+          );
+        });
+      });
+  });
+});

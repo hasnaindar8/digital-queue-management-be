@@ -1,5 +1,11 @@
 const db = require("../db/connection");
 
+function readListOfQueuePatient() {
+  return db.query(`SELECT queue_entries.entry_id, queue_entries.user_id, users.first_name, users.surname, users.phone_no, reasons.label, reasons.est_wait FROM queue_entries
+  left join users on users.user_id = queue_entries.user_id
+  left join reasons on reasons.reason_id = queue_entries.reason_id order by entry_id asc`);
+}
+
 function deleteQueueEntry(entryId) {
   return db
     .query(`DELETE FROM queue_entries WHERE entry_id = $1;`, [entryId])
@@ -14,4 +20,4 @@ function deleteQueueEntry(entryId) {
     });
 }
 
-module.exports = { deleteQueueEntry };
+module.exports = { readListOfQueuePatient, deleteQueueEntry };

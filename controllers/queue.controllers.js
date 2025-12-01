@@ -1,4 +1,13 @@
-const { deleteQueueEntry } = require("../models/queue.models");
+const {
+  readListOfQueuePatient,
+  deleteQueueEntry,
+} = require("../models/queue.models");
+
+const getListOfQueuePatient = (req, res) => {
+  return readListOfQueuePatient().then(({ rows }) => {
+    res.status(200).send({ queue: rows });
+  });
+};
 
 function removePatient(req, res) {
   const { entry_id } = req.params;
@@ -7,4 +16,4 @@ function removePatient(req, res) {
   });
 }
 
-module.exports = { removePatient };
+module.exports = { getListOfQueuePatient, removePatient };
