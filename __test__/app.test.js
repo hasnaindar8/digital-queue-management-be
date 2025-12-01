@@ -107,31 +107,31 @@ describe("GET /api/reasons", () => {
   });
 });
 
-describe("DELETE /api/queue/:entry_id/:user_id", () => {
+describe("DELETE /api/queue/:user_id", () => {
   it("204: Responds with status 204 and no content when patient is removed from queue", () => {
     return request(app)
-      .delete("/api/queue/3/3")
+      .delete("/api/queue/3")
       .expect(204)
       .then(({ body }) => {
         expect(body).toEqual({});
       });
   });
 
-  it("400: Responds with error message when delete request is made with invalid entry_id type", () => {
+  it("400: Responds with error message when delete request is made with invalid user_id type", () => {
     return request(app)
-      .delete("/api/queue/not_a_real_entry_id/3")
+      .delete("/api/queue/not_a_real_user_id")
       .expect(400)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("Invalid input syntax");
       });
   });
 
-  it("404: Responds with error message when delete request is made with valid entry_id that does not exist", () => {
+  it("404: Responds with error message when delete request is made with valid user_id that does not exist", () => {
     return request(app)
-      .delete("/api/queue/50000/3")
+      .delete("/api/queue/50000")
       .expect(404)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("No entry found to delete with entry_id: 50000");
+        expect(msg).toBe("No entry found to delete with user_id: 50000");
       });
   });
 });
@@ -225,9 +225,7 @@ describe("POST /api/queue/join", () => {
       .send(validRequestBody)
       .expect(201)
       .then(({ body }) => {
-        const queueEntry = body.queueEntry;
-        expect(queueEntry.user_id).toBe(validRequestBody.user_id);
-        expect(queueEntry.reason_id).toBe(validRequestBody.reason_id);
+        expect(body).toEqual({});
       });
   });
 
@@ -274,11 +272,11 @@ describe("POST /api/queue/join", () => {
   it("status:409, responds with an error message when passed a body that contains valid user and reason IDs, but at least one doesn't exist", () => {
     const validRequestBodies = [
       {
-        user_id: 20,
+        user_id: 10,
         reason_id: 1,
       },
       {
-        user_id: 1,
+        user_id: 3,
         reason_id: 10,
       },
     ];

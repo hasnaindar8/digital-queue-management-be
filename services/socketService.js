@@ -17,15 +17,15 @@ class SocketService {
     // Authentication middleware
     this.io.use((socket, next) => {
       try {
-        const token = socket.handshake.auth.token;
+        const { id, type } = socket.handshake.auth.token;
 
-        if (!token) throw new Error("Token required");
-
-        const userId = Number(token);
+        const userId = Number(id);
+        const userType = type || "patient";
 
         if (!userId) throw new Error("Invalid token - userId missing");
 
         socket.userId = userId;
+        socket.userType = userType;
 
         next();
       } catch (error) {
@@ -39,24 +39,35 @@ class SocketService {
   }
 
   async handleConnection(socket) {
-    const userId = socket.userId;
+    const { userId, userType } = socket;
 
-    console.log(`User ${userId} connected with socket ${socket.id}`);
+    console.log(
+      `User ${userId} (${userType}) connected with socket ${socket.id}`
+    );
 
     // Join private room
-    socket.join(`user:${userId}`);
+    if (userType === "receptionist") {
+      socket.join("receptionist");
+    } else {
+      socket.join(`user:${userId}`);
+      // Track socket
+      this.socketsByUser[userId] ||= new Set();
+      this.socketsByUser[userId].add(socket.id);
+    }
 
-    // Track socket
-    this.socketsByUser[userId] ||= new Set();
-    this.socketsByUser[userId].add(socket.id);
+    if (userType === "receptionist") {
+      await this.broadcastQueueUpdate();
+    }
 
     socket.on("disconnect", () => this.handleDisconnection(socket));
   }
 
   handleDisconnection(socket) {
-    const userId = socket.userId;
+    const { userId, userType } = socket;
 
-    console.log(`User ${userId} disconnected with socket ${socket.id}`);
+    console.log(
+      `User ${userId} (${userType}) disconnected with socket ${socket.id}`
+    );
 
     if (!this.socketsByUser[userId]) return;
 
@@ -68,7 +79,7 @@ class SocketService {
   }
 
   computePositions(queue) {
-    const positions = {};
+    const positions = {}; // userId → position
 
     queue.forEach((entry, index) => {
       positions[entry.user_id] = index + 1;
@@ -102,11 +113,15 @@ class SocketService {
 
       const update = {
         position,
-        estimatedWait: cumulativeWait[index], // In seconds
+        estimatedWait: cumulativeWait[index], // seconds
         queueLength: queue.length,
       };
 
       this.io.to(`user:${userId}`).emit("queue:update", update);
+    });
+
+    this.io.to("receptionist").emit("queue:length", {
+      length: queue.length,
     });
   }
 

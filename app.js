@@ -21,14 +21,7 @@ app.use(cors());
 
 app.use(express.json());
 
-app.use(express.static("public"));
-
-const io = socketService.initialize(server);
-
-app.use((req, res, next) => {
-  req.io = io;
-  next();
-});
+socketService.initialize(server);
 
 app.use("/api/reasons", reasonRouter);
 
