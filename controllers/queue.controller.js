@@ -25,8 +25,7 @@ function addQueueEntry(req, res) {
   }
 
   return insertQueueEntry(user_id, reason_id)
-    .then((res) => {
-      console.log(res);
+    .then(() => {
       return socketService.broadcastQueueUpdate();
     })
     .then(() => {
