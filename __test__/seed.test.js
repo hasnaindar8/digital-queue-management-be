@@ -330,6 +330,22 @@ describe("seeding", () => {
         });
     });
 
+    test("queue_entries table has a UNIQUE constraint on user_id column", () => {
+      return db
+        .query(
+          `SELECT tc.constraint_name
+          FROM information_schema.table_constraints AS tc
+          JOIN information_schema.constraint_column_usage AS ccu
+            ON tc.constraint_name = ccu.constraint_name
+          WHERE tc.table_name = 'queue_entries'
+            AND tc.constraint_type = 'UNIQUE'
+            AND ccu.column_name = 'user_id';`
+        )
+        .then(({ rows }) => {
+          expect(rows.length).toBe(1);
+        });
+    });
+
     test("queue_entries table has a reason_id column as a integer", () => {
       return db
         .query(

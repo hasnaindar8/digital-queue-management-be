@@ -36,7 +36,7 @@ const seed = ({ reasonData, userData, queueData }) => {
       return db.query(
         `CREATE TABLE queue_entries(
         entry_id SERIAL PRIMARY KEY,
-        user_id INT REFERENCES users(user_id),
+        user_id INT REFERENCES users(user_id) UNIQUE,
         reason_id INT REFERENCES reasons(reason_id),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );`
