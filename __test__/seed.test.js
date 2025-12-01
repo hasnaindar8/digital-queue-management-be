@@ -330,6 +330,22 @@ describe("seeding", () => {
         });
     });
 
+    test("queue_entries table has a UNIQUE constraint on user_id column", () => {
+      return db
+        .query(
+          `SELECT tc.constraint_name
+          FROM information_schema.table_constraints AS tc
+          JOIN information_schema.constraint_column_usage AS ccu
+            ON tc.constraint_name = ccu.constraint_name
+          WHERE tc.table_name = 'queue_entries'
+            AND tc.constraint_type = 'UNIQUE'
+            AND ccu.column_name = 'user_id';`
+        )
+        .then(({ rows }) => {
+          expect(rows.length).toBe(1);
+        });
+    });
+
     test("queue_entries table has a reason_id column as a integer", () => {
       return db
         .query(
@@ -363,6 +379,33 @@ describe("seeding", () => {
         )
         .then(({ rows }) => {
           expect(rows).toHaveLength(1);
+        });
+    });
+
+    test("queue_entries table has a created_at column as timestamp", () => {
+      return db
+        .query(
+          `SELECT column_name, data_type
+            FROM information_schema.columns
+            WHERE table_name = 'queue_entries'
+            AND column_name = 'created_at';`
+        )
+        .then(({ rows: [column] }) => {
+          expect(column.column_name).toBe("created_at");
+          expect(column.data_type).toBe("timestamp without time zone");
+        });
+    });
+
+    test("created_at column has default value of the current timestamp", () => {
+      return db
+        .query(
+          `SELECT column_default
+            FROM information_schema.columns
+            WHERE table_name = 'queue_entries'
+            AND column_name = 'created_at';`
+        )
+        .then(({ rows: [{ column_default }] }) => {
+          expect(column_default).toBe("CURRENT_TIMESTAMP");
         });
     });
   });
