@@ -55,9 +55,10 @@ class SocketService {
       this.socketsByUser[userId].add(socket.id);
     }
 
-    if (userType === "receptionist") {
+    socket.on("queue:requestUpdate", async () => {
+      console.log(`User ${userId} (${userType}) requested queue update`);
       await this.broadcastQueueUpdate();
-    }
+    });
 
     socket.on("disconnect", () => this.handleDisconnection(socket));
   }
@@ -102,7 +103,6 @@ class SocketService {
 
   async broadcastQueueUpdate() {
     const queue = await getQueueEntries();
-
     const positions = this.computePositions(queue);
     const cumulativeWait = this.computeCumulativeWait(queue);
 
