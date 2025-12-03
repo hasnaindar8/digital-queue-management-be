@@ -136,6 +136,43 @@ describe("DELETE /api/queue/:user_id", () => {
   });
 });
 
+describe("GET /api/queue/", () => {
+  it("status:200, responds an object of queue and the value of an array of queue objects", () => {
+    return request(app)
+      .get("/api/queue")
+      .expect(200)
+      .then(({ body: { queue } }) => {
+        expect(queue).toBeInstanceOf(Array);
+        expect(queue).toHaveLength(data.queueData.length - 1);
+        queue.forEach((entry) => {
+          expect(entry).toEqual(
+            expect.objectContaining({
+              entry_id: expect.any(Number),
+              user_id: expect.any(Number),
+              first_name: expect.any(String),
+              surname: expect.any(String),
+              phone_no: expect.any(String),
+              reason_label: expect.any(String),
+            })
+          );
+        });
+      });
+  });
+
+  it("status:200, responds an object of queue and the value of an array of queue objects sorted by date in ascending", () => {
+    return request(app)
+      .get("/api/queue")
+      .expect(200)
+      .then(({ body: { queue } }) => {
+        expect(queue).toBeInstanceOf(Array);
+        expect(queue).toHaveLength(data.queueData.length - 1);
+        expect(queue).toBeSortedBy("created_at", {
+          ascending: true,
+        });
+      });
+  });
+});
+
 describe("POST /api/auth/login", () => {
   it("status:200, responds with a user object", () => {
     const validUser = { email: "example1@email.com", password: "password1" };

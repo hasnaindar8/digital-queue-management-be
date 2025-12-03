@@ -1,8 +1,15 @@
 const {
+  readListOfQueuePatient,
   deleteQueueEntry,
   insertQueueEntry,
 } = require("../models/queue.model.js");
 const socketService = require("../services/socketService.js");
+
+const getListOfQueuePatient = (req, res) => {
+  return readListOfQueuePatient().then(({ rows }) => {
+    res.status(200).send({ queue: rows });
+  });
+};
 
 function removeQueueEntry(req, res) {
   const { user_id } = req.params;
@@ -33,4 +40,4 @@ function addQueueEntry(req, res) {
     });
 }
 
-module.exports = { removeQueueEntry, addQueueEntry };
+module.exports = { getListOfQueuePatient, removeQueueEntry, addQueueEntry };
