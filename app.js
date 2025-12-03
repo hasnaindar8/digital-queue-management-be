@@ -9,13 +9,19 @@ const authRouter = require("./routers/auth-router.js");
 const reasonRouter = require("./routers/reason-router.js");
 const queueRouter = require("./routers/queue-router.js");
 
+const socketService = require("./services/socketService.js");
+
 const express = require("express");
 const app = express();
 const cors = require("cors");
+const { createServer } = require("node:http");
+const server = createServer(app);
 
 app.use(cors());
 
 app.use(express.json());
+
+socketService.initialize(server);
 
 app.use("/api/reasons", reasonRouter);
 
@@ -31,4 +37,4 @@ app.use(psqlErrorHandler);
 
 app.use(serverErrorHandler);
 
-module.exports = app;
+module.exports = { app, server };

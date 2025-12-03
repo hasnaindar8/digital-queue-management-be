@@ -6,14 +6,14 @@ function readListOfQueuePatient() {
   left join reasons on reasons.reason_id = queue_entries.reason_id order by entry_id asc`);
 }
 
-function deleteQueueEntry(entryId) {
+function deleteQueueEntry(userId) {
   return db
-    .query(`DELETE FROM queue_entries WHERE entry_id = $1;`, [entryId])
+    .query(`DELETE FROM queue_entries WHERE user_id = $1;`, [userId])
     .then(({ rowCount }) => {
       if (rowCount === 0) {
         return Promise.reject({
           status: 404,
-          msg: `No entry found to delete with entry_id: ${entryId}`,
+          msg: `No entry found to delete with user_id: ${userId}`,
         });
       }
       return rowCount;
@@ -21,16 +21,27 @@ function deleteQueueEntry(entryId) {
 }
 
 function insertQueueEntry(userId, reasonId) {
+  return db.query(
+    `INSERT INTO queue_entries (user_id, reason_id)
+        VALUES ($1, $2)
+        ON CONFLICT (user_id) DO NOTHING;`,
+    [userId, reasonId]
+  );
+}
+
+function getQueueEntries() {
   return db
     .query(
-      `INSERT INTO queue_entries (user_id, reason_id)
-        VALUES ($1, $2)
-        RETURNING user_id, reason_id;`,
-      [userId, reasonId]
+      `SELECT queue_entries.user_id, reasons.est_wait from queue_entries JOIN reasons ON queue_entries.reason_id=reasons.reason_id ORDER BY queue_entries.created_at ASC;`
     )
     .then(({ rows }) => {
-      return rows[0];
+      return rows;
     });
 }
 
-module.exports = { readListOfQueuePatient, deleteQueueEntry, insertQueueEntry };
+module.exports = {
+  readListOfQueuePatient,
+  deleteQueueEntry,
+  insertQueueEntry,
+  getQueueEntries,
+};

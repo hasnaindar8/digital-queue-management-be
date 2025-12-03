@@ -24,7 +24,7 @@ module.exports = [
     phone_no: "73345678910",
     password: "password3",
     type: "patient",
-    registered: true,
+    registered: false,
   },
   {
     first_name: "bob",
