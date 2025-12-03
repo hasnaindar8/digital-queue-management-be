@@ -93,6 +93,56 @@ The server will listen on **port 8080** by default. You can test the endpoints i
 
 ---
 
+### Project Structure
+
+```text
+.
+├── README.md
+├── Untitled.md
+├── __test__
+│   ├── app.test.js
+│   ├── seed.test.js
+│   └── utils.test.js
+├── app.js
+├── controllers
+│   ├── auth.controller.js
+│   ├── queue.controller.js
+│   └── reason.controller.js
+├── db
+│   ├── connection.js
+│   ├── data
+│   │   ├── development-data
+│   │   │   ├── index.js
+│   │   │   ├── queue.js
+│   │   │   ├── reasons.js
+│   │   │   └── users.js
+│   │   └── test-data
+│   │       ├── index.js
+│   │       ├── queue.js
+│   │       ├── reasons.js
+│   │       └── users.js
+│   ├── seeds
+│   │   ├── run-seed.js
+│   │   ├── seed.js
+│   │   └── utils.js
+│   └── setup-dbs.sql
+├── listen.js
+├── middleware
+│   ├── errorHandler.js
+│   └── notFoundHandler.js
+├── models
+│   ├── auth.model.js
+│   ├── queue.model.js
+│   └── reason.model.js
+├── package-lock.json
+├── package.json
+├── pnpm-lock.yaml
+└── routers
+    ├── auth-router.js
+    ├── queue-router.js
+    └── reason-router.js
+```
+
 ### Valid Endpoints
 
 | Method | Endpoint             | Description                          |
