@@ -26,4 +26,13 @@ module.exports = [
     type: "patient",
     registered: true,
   },
+  {
+    first_name: "Hasnain",
+    surname: "Dar",
+    email: "hasnain@gmail.com",
+    phone_no: "63446784101",
+    password: "password8",
+    type: "receptionist",
+    registered: true,
+  },
 ];
